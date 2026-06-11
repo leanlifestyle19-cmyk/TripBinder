@@ -1485,13 +1485,13 @@ async function renderTrip() {
   </div>
 
   <div class="trip-hero-actions">
-    <button class="trip-hero-btn ${grad}" onclick="navigate('checklist',{checklistTripId:'${trip.id}'})">
+    <button class="trip-hero-btn" onclick="navigate('checklist',{checklistTripId:'${trip.id}'})">
       ✅ Checklist
     </button>
-    <button class="trip-hero-btn ${grad}" onclick="navigate('share',{shareTripId:'${trip.id}'})">
+    <button class="trip-hero-btn" onclick="navigate('share',{shareTripId:'${trip.id}'})">
       📤 Share
     </button>
-    <button class="trip-hero-btn ${grad}" onclick="exportTrip('${trip.id}')">
+    <button class="trip-hero-btn" onclick="exportTrip('${trip.id}')">
       💾 Export
     </button>
     <button class="trip-hero-btn" style="background:rgba(255,235,235,0.95);color:#C62828;margin-left:auto"
