@@ -489,12 +489,88 @@ textarea.form-input{resize:vertical;min-height:88px}
 .notif-banner{background:var(--bg-subtle);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:12px 14px;
   display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-3)}
+
+/* ── ONBOARDING ──────────────────────────────────────── */
+#screen-onboard{position:fixed;inset:0;z-index:900;
+  background:var(--bg);padding-bottom:0;display:none;flex-direction:column}
+#screen-onboard.active{display:flex}
+.ob-slides{flex:1;display:flex;overflow:hidden;position:relative}
+.ob-slide{
+  min-width:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 32px 32px;text-align:center;color:#fff;
+  transition:transform .4s cubic-bezier(.4,0,.2,1);
+}
+.ob-illustration{font-size:88px;margin-bottom:28px;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,0.18));
+  animation:ob-float 3s ease-in-out infinite}
+@keyframes ob-float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+.ob-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;
+  font-weight:700;line-height:1.2;margin-bottom:12px}
+.ob-body{font-size:16px;opacity:0.88;line-height:1.6;max-width:300px}
+.ob-footer{padding:24px 24px calc(24px + var(--safe-bottom));
+  display:flex;flex-direction:column;gap:16px;align-items:center;
+  background:var(--bg-card)}
+.ob-dots{display:flex;gap:8px;align-items:center}
+.ob-dot{width:8px;height:8px;border-radius:50%;
+  background:var(--border);transition:all .3s;cursor:pointer}
+.ob-dot.active{width:24px;border-radius:4px;background:var(--accent)}
+.ob-btn-row{display:flex;gap:10px;width:100%}
+.ob-btn{flex:1;padding:15px;border-radius:var(--radius-sm);
+  font-size:16px;font-weight:700;cursor:pointer;border:none;
+  transition:all .18s}
+.ob-btn-primary{background:var(--accent);color:#fff}
+.ob-btn-ghost{background:var(--bg-subtle);color:var(--text-3);
+  border:1.5px solid var(--border);font-size:14px;flex:0 0 auto;padding:15px 20px}
+.ob-skip{font-size:13px;color:var(--text-muted);padding:4px 8px;
+  background:none;border:none;cursor:pointer}
+
+/* ── PURCHASE BANNER ─────────────────────────────────── */
+#purchase-banner{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom));
+  left:0;right:0;z-index:190;
+  background:linear-gradient(135deg,#1665C0,#0698A0);
+  color:#fff;display:none;align-items:center;
+  padding:10px 16px;gap:10px;
+  box-shadow:0 -2px 12px rgba(22,101,192,0.25);
+}
+#purchase-banner.show{display:flex}
+.pb-text{flex:1;font-size:13px;font-weight:500;line-height:1.4}
+.pb-text strong{display:block;font-size:14px}
+.pb-buy{background:#fff;color:var(--accent);border-radius:var(--radius-sm);
+  padding:7px 14px;font-size:13px;font-weight:700;flex-shrink:0;
+  white-space:nowrap}
+.pb-close{opacity:0.75;font-size:18px;padding:4px;flex-shrink:0}
+
+/* ── LICENSE MODAL ───────────────────────────────────── */
+.license-card{background:linear-gradient(135deg,#1665C0,#0698A0);
+  border-radius:var(--radius);padding:20px;color:#fff;margin-bottom:16px}
+.license-card-title{font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:16px;font-weight:700;margin-bottom:4px}
+.license-card-sub{font-size:13px;opacity:0.85}
+.license-active{background:linear-gradient(135deg,#1B5E20,#00695C)}
 </style>
 </head>
 <body>
 <div id="app">
 
   <!-- ── SCREENS ─────────────────────────────────────── -->
+
+  <!-- ONBOARDING -->
+  <div id="screen-onboard" class="screen">
+    <div class="ob-slides" id="ob-slides-wrap"></div>
+    <div class="ob-footer">
+      <div class="ob-dots" id="ob-dots"></div>
+      <div class="ob-btn-row">
+        <button class="ob-btn ob-btn-ghost" id="ob-back-btn" onclick="obPrev()" style="display:none">← Back</button>
+        <button class="ob-btn ob-btn-primary" id="ob-next-btn" onclick="obNext()">Next →</button>
+      </div>
+      <button class="ob-skip" id="ob-skip-btn" onclick="completeOnboarding()">Skip intro</button>
+    </div>
+  </div>
 
   <!-- HOME -->
   <div id="screen-home" class="screen active">
@@ -613,6 +689,16 @@ textarea.form-input{resize:vertical;min-height:88px}
     </button>
   </nav>
 
+  <!-- ── PURCHASE BANNER ─────────────────────────────── -->
+  <div id="purchase-banner">
+    <div class="pb-text">
+      <strong>✈️ Unlock Wayfarer</strong>
+      Full version · One-time purchase
+    </div>
+    <button class="pb-buy" onclick="openPurchasePage()">Buy Now</button>
+    <button class="pb-close" onclick="dismissBanner()">✕</button>
+  </div>
+
 </div>
 
 <!-- ── TOAST ─────────────────────────────────────────── -->
@@ -642,8 +728,181 @@ textarea.form-input{resize:vertical;min-height:88px}
 'use strict';
 
 /* ══════════════════════════════════════════════════════
-   DATABASE
+   CONFIG — edit these before publishing
 ══════════════════════════════════════════════════════ */
+const CONFIG = {
+  appName:    'Wayfarer',
+  price:      '$9',
+  gumroadUrl: 'https://gumroad.com/l/CHANGE_THIS_TO_YOUR_LINK',
+  // To generate license keys, open your browser console and run:
+  //   for(let i=1;i<=10;i++) console.log(genKey(i))
+  // Share one key per buyer via Gumroad delivery email.
+  _km: 9973,   // secret modulus  — change both values before publishing
+  _kn: 4271,   // secret remainder — keep private, never share
+};
+
+/* ══════════════════════════════════════════════════════
+   ONBOARDING
+══════════════════════════════════════════════════════ */
+const OB_SLIDES = [
+  {
+    grad: 'linear-gradient(160deg,#1665C0 0%,#0698A0 100%)',
+    icon: '✈️',
+    title: 'Welcome to Wayfarer',
+    body:  'Your personal travel binder. Plan every trip, store every detail — all in one beautiful place.',
+  },
+  {
+    grad: 'linear-gradient(160deg,#1B5E20 0%,#00695C 100%)',
+    icon: '📱',
+    title: 'Works 100% Offline',
+    body:  'Access your full itinerary, boarding passes, and hotel docs with zero internet connection.',
+  },
+  {
+    grad: 'linear-gradient(160deg,#E65100 0%,#F57F17 100%)',
+    icon: '🗂️',
+    title: 'Everything in One Place',
+    body:  'Attach PDFs, images, and booking refs directly to flights, hotels, meals, and activities.',
+  },
+  {
+    grad: 'linear-gradient(160deg,#AD1457 0%,#6A1B9A 100%)',
+    icon: '🌏',
+    title: 'Plan Your Next Adventure',
+    body:  'Create unlimited trips, add a pre-departure checklist, and share your itinerary with travel companions.',
+  },
+];
+
+let obIndex = 0;
+
+function renderOnboarding() {
+  const wrap = document.getElementById('ob-slides-wrap');
+  const dots  = document.getElementById('ob-dots');
+  const backBtn = document.getElementById('ob-back-btn');
+  const nextBtn = document.getElementById('ob-next-btn');
+  const skipBtn = document.getElementById('ob-skip-btn');
+  const isLast  = obIndex === OB_SLIDES.length - 1;
+
+  // Slides
+  wrap.innerHTML = OB_SLIDES.map((s, i) => `
+    <div class="ob-slide" style="background:${s.grad};
+      transform:translateX(${(i - obIndex) * 100}%)">
+      <div class="ob-illustration">${s.icon}</div>
+      <div class="ob-title">${s.title}</div>
+      <div class="ob-body">${s.body}</div>
+    </div>`).join('');
+
+  // Dots
+  dots.innerHTML = OB_SLIDES.map((_, i) =>
+    `<div class="ob-dot ${i === obIndex ? 'active' : ''}" onclick="obGoTo(${i})"></div>`
+  ).join('');
+
+  // Buttons
+  backBtn.style.display = obIndex > 0 ? '' : 'none';
+  nextBtn.textContent   = isLast ? '🚀 Get Started' : 'Next →';
+  skipBtn.style.display = isLast ? 'none' : '';
+}
+
+function obNext() {
+  if (obIndex < OB_SLIDES.length - 1) {
+    obIndex++;
+    renderOnboarding();
+  } else {
+    completeOnboarding();
+  }
+}
+
+function obPrev() {
+  if (obIndex > 0) { obIndex--; renderOnboarding(); }
+}
+
+function obGoTo(i) {
+  obIndex = i;
+  renderOnboarding();
+}
+
+async function completeOnboarding() {
+  await Settings.set('onboarded', true);
+  // Hide onboarding screen
+  document.getElementById('screen-onboard').classList.remove('active');
+  // Show home
+  navigate('home', {}, false);
+  // Show purchase banner after short delay
+  setTimeout(() => showPurchaseBanner(), 1200);
+}
+
+async function checkOnboarded() {
+  const rec = await Settings.get('onboarded').catch(() => null);
+  if (rec && rec.value) {
+    // Already onboarded — go straight to app
+    navigate('home', {}, false);
+    setTimeout(() => showPurchaseBanner(), 800);
+  } else {
+    // First launch — show onboarding
+    obIndex = 0;
+    document.getElementById('screen-onboard').classList.add('active');
+    // Hide home screen's active class
+    document.getElementById('screen-home').classList.remove('active');
+    renderOnboarding();
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   LICENSE / PURCHASE
+══════════════════════════════════════════════════════ */
+
+// Validate a license key entered by the user
+function validateLicenseKey(key) {
+  const clean = key.replace(/[\s\-]/g, '').toUpperCase();
+  if (!clean.startsWith('WF') || clean.length < 6) return false;
+  const body = clean.slice(2);
+  const n    = parseInt(body, 36);
+  return !isNaN(n) && (n % CONFIG._km) === CONFIG._kn;
+}
+
+// Key generator — run in console: genKey(1), genKey(2), etc.
+// One unique key per buyer.
+window.genKey = function(index) {
+  const n = CONFIG._kn + CONFIG._km * (index + 100);
+  return 'WF-' + n.toString(36).toUpperCase();
+};
+
+async function checkLicense() {
+  const rec = await Settings.get('license').catch(() => null);
+  return rec && rec.value && rec.value.active === true;
+}
+
+async function activateLicense(key) {
+  if (!key.trim()) { showToast('Please enter a license key'); return; }
+  if (!validateLicenseKey(key.trim())) {
+    showToast('❌ Invalid license key');
+    return;
+  }
+  await Settings.set('license', { active: true, key: key.trim().toUpperCase(), activatedAt: new Date().toISOString() });
+  hidePurchaseBanner();
+  showToast('🎉 Wayfarer unlocked! Thank you.');
+  renderSettings();
+}
+
+async function showPurchaseBanner() {
+  const licensed = await checkLicense();
+  if (licensed) return;
+  // Only show once per session (if dismissed, don't show again until restart)
+  if (window._bannerDismissed) return;
+  document.getElementById('purchase-banner').classList.add('show');
+}
+
+function hidePurchaseBanner() {
+  document.getElementById('purchase-banner').classList.remove('show');
+}
+
+function dismissBanner() {
+  window._bannerDismissed = true;
+  hidePurchaseBanner();
+}
+
+function openPurchasePage() {
+  window.open(CONFIG.gumroadUrl, '_blank');
+}
+
 const DB_NAME = 'wayfarer';
 const DB_VER  = 3;
 let db = null;
@@ -2030,11 +2289,39 @@ async function addCheck() {
 async function renderSettings() {
   const root = document.getElementById('settings-root');
   const trips = await Trips.getAll();
+  const licensed = await checkLicense();
+  const licRec   = licensed ? await Settings.get('license') : null;
 
   const notifSupported = 'Notification' in window;
   const notifGranted   = notifSupported && Notification.permission === 'granted';
 
   root.innerHTML = `
+  <div class="settings-group">
+    <div class="settings-label">License</div>
+    ${licensed ? `
+    <div class="license-card license-active">
+      <div class="license-card-title">✅ Wayfarer — Unlocked</div>
+      <div class="license-card-sub">Key: <span style="font-family:'DM Mono',monospace">${escHtml(licRec?.value?.key||'')}</span></div>
+    </div>` : `
+    <div class="license-card">
+      <div class="license-card-title">✈️ Unlock Full Version</div>
+      <div class="license-card-sub">One-time purchase · ${CONFIG.price} · No subscription</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input class="form-input" id="license-key-input" placeholder="Enter key e.g. WF-3AB9C1"
+        style="flex:1;font-family:'DM Mono',monospace;text-transform:uppercase">
+      <button class="btn btn-primary" onclick="activateLicense(document.getElementById('license-key-input').value)">
+        Activate
+      </button>
+    </div>
+    <button class="btn btn-ghost btn-full" onclick="openPurchasePage()" style="margin-bottom:4px">
+      🛒 Buy Wayfarer — ${CONFIG.price}
+    </button>
+    <div style="font-size:12px;color:var(--text-muted);padding:4px 0">
+      After purchase you will receive a license key by email.
+    </div>`}
+  </div>
+
   <div class="settings-group">
     <div class="settings-label">Appearance</div>
     <div class="settings-row">
@@ -2408,10 +2695,9 @@ async function seedDemoData() {
 async function init() {
   await openDB();
   await loadTheme();
-  await seedDemoData();
   await scheduleNotifications();
   registerSW();
-  navigate('home', {}, false);
+  await checkOnboarded();
 }
 
 init().catch(console.error);
