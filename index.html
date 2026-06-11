@@ -318,10 +318,11 @@ textarea.form-input{resize:vertical;min-height:88px}
   font-weight:700;line-height:1.2;margin-bottom:4px}
 .trip-hero-sub{font-size:14px;opacity:0.85}
 .trip-hero-actions{display:flex;gap:8px;padding:12px 16px 4px;flex-wrap:wrap}
-.trip-hero-btn{background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:20px;
-  padding:7px 16px;font-size:13px;font-weight:600;
-  display:flex;align-items:center;gap:5px}
+.trip-hero-btn{background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);
+  border:none;color:#061826;border-radius:20px;
+  padding:8px 16px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:5px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15)}
 
 /* ── DAY TABS ───────────────────────────────────────── */
 .day-tabs{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;
@@ -827,6 +828,14 @@ async function completeOnboarding() {
   navigate('home', {}, false);
   // Show purchase banner after short delay
   setTimeout(() => showPurchaseBanner(), 1200);
+}
+
+async function replayIntro() {
+  await Settings.set('onboarded', false);
+  obIndex = 0;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-onboard').classList.add('active');
+  renderOnboarding();
 }
 
 async function checkOnboarded() {
@@ -1485,7 +1494,7 @@ async function renderTrip() {
     <button class="trip-hero-btn ${grad}" onclick="exportTrip('${trip.id}')">
       💾 Export
     </button>
-    <button class="trip-hero-btn grad-slate" style="margin-left:auto"
+    <button class="trip-hero-btn" style="background:rgba(255,235,235,0.95);color:#C62828;margin-left:auto"
       onclick="confirmDelete('trip','${trip.id}','${escHtml(trip.name).replace(/'/g,"\\'")}')">
       🗑️ Delete
     </button>
@@ -2380,6 +2389,9 @@ async function renderSettings() {
         All your trip data is stored locally on this device using IndexedDB. No servers, no accounts required.
       </div>
     </div>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="replayIntro()">
+      ▶️ Replay Intro
+    </button>
   </div>`;
 }
 
