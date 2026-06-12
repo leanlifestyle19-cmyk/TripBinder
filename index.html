@@ -3059,7 +3059,7 @@ Return ONLY valid JSON, no other text, no markdown code blocks:
       "date": "YYYY-MM-DD",
       "time": "HH:MM",
       "location": "specific area or address",
-      "description": "1 sentence tip or detail"
+      "description": "one short tip (max 10 words)"
     }
   ]
 }
@@ -3085,7 +3085,7 @@ ${aiState.specialText.trim() ? `  * ${aiState.specialText.trim()}` : ''}` : ''}`
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 4000,
+          maxOutputTokens: 8192,
           thinkingConfig: { thinkingBudget: 0 },
         },
       }),
