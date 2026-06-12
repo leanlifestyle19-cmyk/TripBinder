@@ -528,31 +528,6 @@ textarea.form-input{resize:vertical;min-height:88px}
   border:1.5px solid var(--border);font-size:14px;flex:0 0 auto;padding:15px 20px}
 .ob-skip{font-size:13px;color:var(--text-muted);padding:4px 8px;
   background:none;border:none;cursor:pointer}
-
-/* ── PURCHASE BANNER ─────────────────────────────────── */
-#purchase-banner{
-  position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom));
-  left:0;right:0;z-index:190;
-  background:linear-gradient(135deg,#1665C0,#0698A0);
-  color:#fff;display:none;align-items:center;
-  padding:10px 16px;gap:10px;
-  box-shadow:0 -2px 12px rgba(22,101,192,0.25);
-}
-#purchase-banner.show{display:flex}
-.pb-text{flex:1;font-size:13px;font-weight:500;line-height:1.4}
-.pb-text strong{display:block;font-size:14px}
-.pb-buy{background:#fff;color:var(--accent);border-radius:var(--radius-sm);
-  padding:7px 14px;font-size:13px;font-weight:700;flex-shrink:0;
-  white-space:nowrap}
-.pb-close{opacity:0.75;font-size:18px;padding:4px;flex-shrink:0}
-
-/* ── LICENSE MODAL ───────────────────────────────────── */
-.license-card{background:linear-gradient(135deg,#1665C0,#0698A0);
-  border-radius:var(--radius);padding:20px;color:#fff;margin-bottom:16px}
-.license-card-title{font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:16px;font-weight:700;margin-bottom:4px}
-.license-card-sub{font-size:13px;opacity:0.85}
-.license-active{background:linear-gradient(135deg,#1B5E20,#00695C)}
 </style>
 </head>
 <body>
@@ -690,15 +665,6 @@ textarea.form-input{resize:vertical;min-height:88px}
     </button>
   </nav>
 
-  <!-- ── PURCHASE BANNER ─────────────────────────────── -->
-  <div id="purchase-banner">
-    <div class="pb-text">
-      <strong>✈️ Unlock Wayfarer</strong>
-      Full version · One-time purchase
-    </div>
-    <button class="pb-buy" onclick="openPurchasePage()">Buy Now</button>
-    <button class="pb-close" onclick="dismissBanner()">✕</button>
-  </div>
 
 </div>
 
@@ -772,17 +738,6 @@ function toolkitBannerHTML(currentApp) {
   </div>`;
 }
 
-const CONFIG = {
-  appName:    'Wayfarer',
-  price:      '$9',
-  gumroadUrl: 'https://gumroad.com/l/CHANGE_THIS_TO_YOUR_LINK',
-  // To generate license keys, open your browser console and run:
-  //   for(let i=1;i<=10;i++) console.log(genKey(i))
-  // Share one key per buyer via Gumroad delivery email.
-  _km: 9973,   // secret modulus  — change both values before publishing
-  _kn: 4271,   // secret remainder — keep private, never share
-};
-
 /* ══════════════════════════════════════════════════════
    ONBOARDING
 ══════════════════════════════════════════════════════ */
@@ -790,7 +745,7 @@ const OB_SLIDES = [
   {
     grad: 'linear-gradient(160deg,#1665C0 0%,#0698A0 100%)',
     icon: '✈️',
-    title: 'Welcome to Wayfarer',
+    title: 'Welcome to TripBinder',
     body:  'Your personal travel binder. Plan every trip, store every detail — all in one beautiful place.',
   },
   {
@@ -816,14 +771,13 @@ const OB_SLIDES = [
 let obIndex = 0;
 
 function renderOnboarding() {
-  const wrap = document.getElementById('ob-slides-wrap');
-  const dots  = document.getElementById('ob-dots');
+  const wrap    = document.getElementById('ob-slides-wrap');
+  const dots    = document.getElementById('ob-dots');
   const backBtn = document.getElementById('ob-back-btn');
   const nextBtn = document.getElementById('ob-next-btn');
   const skipBtn = document.getElementById('ob-skip-btn');
   const isLast  = obIndex === OB_SLIDES.length - 1;
 
-  // Slides
   wrap.innerHTML = OB_SLIDES.map((s, i) => `
     <div class="ob-slide" style="background:${s.grad};
       transform:translateX(${(i - obIndex) * 100}%)">
@@ -832,43 +786,26 @@ function renderOnboarding() {
       <div class="ob-body">${s.body}</div>
     </div>`).join('');
 
-  // Dots
   dots.innerHTML = OB_SLIDES.map((_, i) =>
     `<div class="ob-dot ${i === obIndex ? 'active' : ''}" onclick="obGoTo(${i})"></div>`
   ).join('');
 
-  // Buttons
   backBtn.style.display = obIndex > 0 ? '' : 'none';
   nextBtn.textContent   = isLast ? '🚀 Get Started' : 'Next →';
   skipBtn.style.display = isLast ? 'none' : '';
 }
 
 function obNext() {
-  if (obIndex < OB_SLIDES.length - 1) {
-    obIndex++;
-    renderOnboarding();
-  } else {
-    completeOnboarding();
-  }
+  if (obIndex < OB_SLIDES.length - 1) { obIndex++; renderOnboarding(); }
+  else completeOnboarding();
 }
-
-function obPrev() {
-  if (obIndex > 0) { obIndex--; renderOnboarding(); }
-}
-
-function obGoTo(i) {
-  obIndex = i;
-  renderOnboarding();
-}
+function obPrev()  { if (obIndex > 0) { obIndex--; renderOnboarding(); } }
+function obGoTo(i) { obIndex = i; renderOnboarding(); }
 
 async function completeOnboarding() {
   await Settings.set('onboarded', true);
-  // Hide onboarding screen
   document.getElementById('screen-onboard').classList.remove('active');
-  // Show home
   navigate('home', {}, false);
-  // Show purchase banner after short delay
-  setTimeout(() => showPurchaseBanner(), 1200);
 }
 
 async function replayIntro() {
@@ -882,75 +819,13 @@ async function replayIntro() {
 async function checkOnboarded() {
   const rec = await Settings.get('onboarded').catch(() => null);
   if (rec && rec.value) {
-    // Already onboarded — go straight to app
     navigate('home', {}, false);
-    setTimeout(() => showPurchaseBanner(), 800);
   } else {
-    // First launch — show onboarding
     obIndex = 0;
     document.getElementById('screen-onboard').classList.add('active');
-    // Hide home screen's active class
     document.getElementById('screen-home').classList.remove('active');
     renderOnboarding();
   }
-}
-
-/* ══════════════════════════════════════════════════════
-   LICENSE / PURCHASE
-══════════════════════════════════════════════════════ */
-
-// Validate a license key entered by the user
-function validateLicenseKey(key) {
-  const clean = key.replace(/[\s\-]/g, '').toUpperCase();
-  if (!clean.startsWith('WF') || clean.length < 6) return false;
-  const body = clean.slice(2);
-  const n    = parseInt(body, 36);
-  return !isNaN(n) && (n % CONFIG._km) === CONFIG._kn;
-}
-
-// Key generator — run in console: genKey(1), genKey(2), etc.
-// One unique key per buyer.
-window.genKey = function(index) {
-  const n = CONFIG._kn + CONFIG._km * (index + 100);
-  return 'WF-' + n.toString(36).toUpperCase();
-};
-
-async function checkLicense() {
-  const rec = await Settings.get('license').catch(() => null);
-  return rec && rec.value && rec.value.active === true;
-}
-
-async function activateLicense(key) {
-  if (!key.trim()) { showToast('Please enter a license key'); return; }
-  if (!validateLicenseKey(key.trim())) {
-    showToast('❌ Invalid license key');
-    return;
-  }
-  await Settings.set('license', { active: true, key: key.trim().toUpperCase(), activatedAt: new Date().toISOString() });
-  hidePurchaseBanner();
-  showToast('🎉 Wayfarer unlocked! Thank you.');
-  renderSettings();
-}
-
-async function showPurchaseBanner() {
-  const licensed = await checkLicense();
-  if (licensed) return;
-  // Only show once per session (if dismissed, don't show again until restart)
-  if (window._bannerDismissed) return;
-  document.getElementById('purchase-banner').classList.add('show');
-}
-
-function hidePurchaseBanner() {
-  document.getElementById('purchase-banner').classList.remove('show');
-}
-
-function dismissBanner() {
-  window._bannerDismissed = true;
-  hidePurchaseBanner();
-}
-
-function openPurchasePage() {
-  window.open(CONFIG.gumroadUrl, '_blank');
 }
 
 const DB_NAME = 'wayfarer';
@@ -2341,40 +2216,10 @@ async function addCheck() {
 ══════════════════════════════════════════════════════ */
 async function renderSettings() {
   const root = document.getElementById('settings-root');
-  const trips = await Trips.getAll();
-  const licensed = await checkLicense();
-  const licRec   = licensed ? await Settings.get('license') : null;
-
   const notifSupported = 'Notification' in window;
   const notifGranted   = notifSupported && Notification.permission === 'granted';
 
   root.innerHTML = `
-  <div class="settings-group">
-    <div class="settings-label">License</div>
-    ${licensed ? `
-    <div class="license-card license-active">
-      <div class="license-card-title">✅ Wayfarer — Unlocked</div>
-      <div class="license-card-sub">Key: <span style="font-family:'DM Mono',monospace">${escHtml(licRec?.value?.key||'')}</span></div>
-    </div>` : `
-    <div class="license-card">
-      <div class="license-card-title">✈️ Unlock Full Version</div>
-      <div class="license-card-sub">One-time purchase · ${CONFIG.price} · No subscription</div>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input class="form-input" id="license-key-input" placeholder="Enter key e.g. WF-3AB9C1"
-        style="flex:1;font-family:'DM Mono',monospace;text-transform:uppercase">
-      <button class="btn btn-primary" onclick="activateLicense(document.getElementById('license-key-input').value)">
-        Activate
-      </button>
-    </div>
-    <button class="btn btn-ghost btn-full" onclick="openPurchasePage()" style="margin-bottom:4px">
-      🛒 Buy Wayfarer — ${CONFIG.price}
-    </button>
-    <div style="font-size:12px;color:var(--text-muted);padding:4px 0">
-      After purchase you will receive a license key by email.
-    </div>`}
-  </div>
-
   <div class="settings-group">
     <div class="settings-label">Appearance</div>
     <div class="settings-row">
@@ -2398,44 +2243,32 @@ async function renderSettings() {
   </div>
 
   <div class="settings-group">
-    <div class="settings-label">Backup & Sync</div>
-    <div style="color:var(--text-3);font-size:13px;padding:4px 0 10px;line-height:1.6">
-      Wayfarer stores everything on your device. Export a trip as JSON and save to Google Drive or iCloud. Import on another device to sync.
-    </div>
-    ${trips.map(tr => `
-    <div class="settings-row">
+    <div class="settings-label">Help</div>
+    <div class="settings-row" style="cursor:pointer" onclick="replayIntro()">
       <div class="settings-row-left">
-        <div class="settings-row-title">${escHtml(tr.name)}</div>
-        <div class="settings-row-sub">${fmtDate(tr.startDate)} – ${fmtDate(tr.endDate)}</div>
+        <div class="settings-row-title">Replay Intro</div>
+        <div class="settings-row-sub">Watch the intro slides again</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="exportTrip('${tr.id}')">Export</button>
-    </div>`).join('')}
-
-    <div style="margin-top:12px">
-      <div class="import-zone" id="import-zone" onclick="document.getElementById('import-input').click()"
-        ondragover="event.preventDefault();this.classList.add('drag-over')"
-        ondragleave="this.classList.remove('drag-over')"
-        ondrop="handleImportDrop(event)">
-        <div class="import-zone-icon">📥</div>
-        <div style="font-weight:600;margin-bottom:4px">Import Trip</div>
-        <div style="font-size:13px">Tap or drop a .json file here</div>
-      </div>
-      <input type="file" id="import-input" accept=".json,application/json" style="display:none" onchange="handleImportFile(this)">
+      <span style="color:var(--text-muted);font-size:18px">→</span>
     </div>
   </div>
 
   <div class="settings-group">
     <div class="settings-label">About</div>
     <div style="padding:16px 0;display:flex;flex-direction:column;gap:4px">
-      <div class="about-logo">Wayfarer ✈️</div>
-      <div class="about-version">Version 1.0.0 · Offline-first travel binder</div>
+      <div class="about-logo">TripBinder ✈️</div>
+      <div class="about-version">Version 1.0.0 · Your personal travel binder</div>
       <div style="font-size:13px;color:var(--text-3);margin-top:8px;line-height:1.6">
-        All your trip data is stored locally on this device using IndexedDB. No servers, no accounts required.
+        Everything stays on your device. No accounts needed, works without internet.
       </div>
     </div>
-    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="replayIntro()">
-      ▶️ Replay Intro
-    </button>
+    <a href="https://ko-fi.com/YOUR_KOFI_USERNAME" target="_blank"
+      style="display:flex;align-items:center;justify-content:center;gap:8px;
+        background:#FF5E5B;color:#fff;border-radius:var(--radius-sm);
+        padding:13px;font-size:15px;font-weight:700;text-decoration:none;
+        margin-top:4px;box-shadow:0 4px 12px rgba(255,94,91,0.25)">
+      ☕ Buy me a coffee
+    </a>
   </div>`;
 }
 
