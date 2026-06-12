@@ -3065,7 +3065,11 @@ Rules:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 4000 },
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 4000,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
     }
   );
@@ -3080,8 +3084,13 @@ Rules:
   const data = await response.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-  // Strip any markdown code fences if present
-  const clean = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+  // Robust JSON extraction — strip thinking blocks, markdown fences, then find the object
+  let clean = text;
+  clean = clean.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '');
+  clean = clean.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('AI returned unexpected format. Please try again.');
+  clean = jsonMatch[0];
 
   let parsed;
   try { parsed = JSON.parse(clean); }
