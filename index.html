@@ -528,6 +528,69 @@ textarea.form-input{resize:vertical;min-height:88px}
   border:1.5px solid var(--border);font-size:14px;flex:0 0 auto;padding:15px 20px}
 .ob-skip{font-size:13px;color:var(--text-muted);padding:4px 8px;
   background:none;border:none;cursor:pointer}
+
+/* ── AI PLANNER ──────────────────────────────────────── */
+.ai-hero{background:linear-gradient(135deg,#4527A0,#1665C0);
+  color:#fff;padding:32px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.ai-hero::after{content:'✨';position:absolute;right:-10px;top:-10px;
+  font-size:120px;opacity:0.07}
+.ai-hero-icon{font-size:52px;margin-bottom:12px}
+.ai-hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;
+  font-weight:700;margin-bottom:6px}
+.ai-hero-sub{font-size:14px;opacity:0.85;line-height:1.5;max-width:280px;margin:0 auto}
+.ai-pill-row{display:flex;gap:8px;flex-wrap:wrap}
+.ai-pill{padding:9px 16px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);background:var(--bg-subtle);
+  font-size:14px;font-weight:600;color:var(--text-3);cursor:pointer;
+  transition:all .18s;white-space:nowrap}
+.ai-pill.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ai-pill.style{flex:1;text-align:center}
+.ai-pill.interest{border-radius:20px;font-size:13px}
+.btn-ai{background:linear-gradient(135deg,#4527A0,#1665C0);color:#fff;
+  border-radius:var(--radius-sm);padding:15px;font-size:16px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;border:none;cursor:pointer;transition:filter .2s;margin-top:8px}
+.btn-ai:active{filter:brightness(0.9)}
+.btn-ai:disabled{opacity:0.45;cursor:not-allowed;filter:none}
+.ai-loading{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 24px;gap:16px;text-align:center}
+.ai-spinner{width:48px;height:48px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-loading-msg{font-size:15px;color:var(--text-3);font-weight:500}
+.ai-result-day{padding:12px 16px;border-bottom:1px solid var(--border)}
+.ai-result-day:last-child{border-bottom:none}
+.ai-result-day-label{font-size:12px;font-weight:700;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px}
+.ai-result-item{display:flex;align-items:center;gap:10px;
+  padding:6px 0;font-size:14px;color:var(--text-2)}
+.ai-result-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ai-key-card{background:var(--bg-subtle);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px}
+/* FAB choice sheet */
+.fab-choice-overlay{position:fixed;inset:0;z-index:500;
+  background:rgba(6,24,38,0.55);backdrop-filter:blur(4px);
+  display:none;align-items:flex-end;justify-content:center}
+.fab-choice-overlay.show{display:flex}
+.fab-choice-sheet{background:var(--bg-card);
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  width:100%;max-width:560px;
+  padding:20px 20px calc(20px + var(--safe-bottom));
+  box-shadow:var(--shadow-lg)}
+.fab-choice-title{font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:16px;font-weight:700;margin-bottom:14px;color:var(--text)}
+.fab-choice-btn{display:flex;align-items:center;gap:14px;
+  padding:14px;border-radius:var(--radius);
+  background:var(--bg-subtle);border:1.5px solid var(--border);
+  width:100%;cursor:pointer;transition:all .2s;margin-bottom:10px;text-align:left}
+.fab-choice-btn:last-child{margin-bottom:0}
+.fab-choice-btn:active{background:var(--border)}
+.fab-choice-icon{width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.fab-choice-text{display:flex;flex-direction:column;gap:2px}
+.fab-choice-label{font-weight:600;font-size:15px;color:var(--text)}
+.fab-choice-sub{font-size:12px;color:var(--text-3)}
 </style>
 </head>
 <body>
@@ -646,6 +709,17 @@ textarea.form-input{resize:vertical;min-height:88px}
     <div class="scroll-body" id="share-root"></div>
   </div>
 
+  <!-- AI PLANNER -->
+  <div id="screen-ai-planner" class="screen">
+    <div class="app-header">
+      <button class="header-back" onclick="goBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <span class="header-title">✨ AI Trip Planner</span>
+    </div>
+    <div class="scroll-body" id="ai-planner-body"></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav id="bottom-nav">
     <button class="nav-item active" data-nav="home" onclick="navigate('home')">
@@ -666,6 +740,27 @@ textarea.form-input{resize:vertical;min-height:88px}
   </nav>
 
 
+</div>
+
+<!-- ── FAB CHOICE ─────────────────────────────────────── -->
+<div class="fab-choice-overlay" id="fab-choice-overlay" onclick="if(event.target===this)closeFabChoice()">
+  <div class="fab-choice-sheet">
+    <div class="fab-choice-title">Add to TripBinder</div>
+    <button class="fab-choice-btn" onclick="closeFabChoice();navigate('ai-planner',{})">
+      <div class="fab-choice-icon" style="background:linear-gradient(135deg,#4527A0,#1665C0);color:#fff">✨</div>
+      <div class="fab-choice-text">
+        <span class="fab-choice-label">Generate with AI</span>
+        <span class="fab-choice-sub">Describe your trip — AI builds the itinerary</span>
+      </div>
+    </button>
+    <button class="fab-choice-btn" onclick="closeFabChoice();navigate('edit-trip',{editTripId:null})">
+      <div class="fab-choice-icon" style="background:var(--bg-subtle)">✏️</div>
+      <div class="fab-choice-text">
+        <span class="fab-choice-label">Plan manually</span>
+        <span class="fab-choice-sub">Build your itinerary step by step</span>
+      </div>
+    </button>
+  </div>
 </div>
 
 <!-- ── TOAST ─────────────────────────────────────────── -->
@@ -1118,15 +1213,16 @@ function navigate(screen, params = {}, addHistory = true) {
 
   // Render
   const renders = {
-    home:       renderHome,
-    trips:      renderTrips,
-    trip:       renderTrip,
-    item:       renderItem,
-    'edit-trip': renderEditTrip,
-    'edit-item': renderEditItem,
-    checklist:  renderChecklist,
-    settings:   renderSettings,
-    share:      renderShare,
+    home:          renderHome,
+    trips:         renderTrips,
+    trip:          renderTrip,
+    item:          renderItem,
+    'edit-trip':   renderEditTrip,
+    'edit-item':   renderEditItem,
+    checklist:     renderChecklist,
+    settings:      renderSettings,
+    share:         renderShare,
+    'ai-planner':  renderAiPlanner,
   };
   (renders[screen] || (() => {}))();
 }
@@ -1167,8 +1263,12 @@ function handleFab() {
       editItemDate: state.activeDay || today(),
     });
   } else {
-    navigate('edit-trip', { editTripId: null });
+    document.getElementById('fab-choice-overlay').classList.add('show');
   }
+}
+
+function closeFabChoice() {
+  document.getElementById('fab-choice-overlay').classList.remove('show');
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2218,8 +2318,36 @@ async function renderSettings() {
   const root = document.getElementById('settings-root');
   const notifSupported = 'Notification' in window;
   const notifGranted   = notifSupported && Notification.permission === 'granted';
+  const apiKey         = await getApiKey();
 
   root.innerHTML = `
+  <div class="settings-group">
+    <div class="settings-label">AI Trip Planner</div>
+    ${apiKey ? `
+    <div class="settings-row">
+      <div class="settings-row-left">
+        <div class="settings-row-title">✨ AI Connected</div>
+        <div class="settings-row-sub" style="font-family:'DM Mono',monospace;font-size:11px">
+          ${apiKey.slice(0,12)}••••••••••••
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="clearApiKey().then(renderSettings)">Remove</button>
+    </div>
+    <div class="settings-row" style="cursor:pointer" onclick="navigate('ai-planner',{})">
+      <div class="settings-row-left">
+        <div class="settings-row-title">Generate a trip with AI</div>
+        <div class="settings-row-sub">Describe your trip — AI builds the itinerary</div>
+      </div>
+      <span style="color:var(--text-muted);font-size:18px">→</span>
+    </div>` : `
+    <div style="font-size:13px;color:var(--text-3);line-height:1.6;padding:8px 0 12px">
+      Connect your free Anthropic API key to generate full day-by-day itineraries with AI.
+    </div>
+    <button class="btn btn-primary btn-full" onclick="navigate('ai-planner',{})">
+      ✨ Set Up AI Planner
+    </button>`}
+  </div>
+
   <div class="settings-group">
     <div class="settings-label">Appearance</div>
     <div class="settings-row">
@@ -2579,8 +2707,446 @@ async function seedDemoData() {
 }
 
 /* ══════════════════════════════════════════════════════
-   INIT
+   AI TRIP PLANNER
 ══════════════════════════════════════════════════════ */
+const AI_STYLES    = ['Relaxed 😌','Balanced 🎯','Packed ⚡'];
+const AI_INTERESTS = ['🍽️ Food','🏛️ Culture','🌿 Nature','🛍️ Shopping',
+                      '🏔️ Adventure','📸 Instagram','🎭 Nightlife','👨‍👩‍👧 Family'];
+const AI_DAYS      = [3, 5, 7, 10, 14];
+const AI_MSGS      = [
+  'Researching your destination ✈️',
+  'Finding the best local spots 📍',
+  'Planning your perfect days 🗓️',
+  'Adding hidden gems 💎',
+  'Almost there... 🎒',
+];
+
+const aiState = {
+  destination: '',
+  days:        5,
+  startDate:   today(),
+  style:       'Balanced 🎯',
+  interests:   ['🍽️ Food','🏛️ Culture'],
+  result:      null,
+  loading:     false,
+};
+
+async function renderAiPlanner() {
+  const body = document.getElementById('ai-planner-body');
+  const apiKey = await getApiKey();
+
+  if (!apiKey) {
+    renderApiKeySetup(body);
+    return;
+  }
+
+  if (aiState.loading) {
+    renderAiLoading(body);
+    return;
+  }
+
+  if (aiState.result) {
+    renderAiResult(body, aiState.result);
+    return;
+  }
+
+  renderAiForm(body);
+}
+
+function renderApiKeySetup(body) {
+  body.innerHTML = `
+  <div class="ai-hero">
+    <div class="ai-hero-icon">✨</div>
+    <div class="ai-hero-title">AI Trip Planner</div>
+    <div class="ai-hero-sub">Describe your trip and get a full day-by-day itinerary in seconds</div>
+  </div>
+  <div class="form-section">
+    <div class="ai-key-card">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+        font-size:15px;color:var(--text);margin-bottom:6px">
+        🔑 Connect your Anthropic API key
+      </div>
+      <div style="font-size:13px;color:var(--text-3);line-height:1.6;margin-bottom:12px">
+        The AI runs on your own free Anthropic account. New accounts get free credit — more than enough to plan dozens of trips.
+      </div>
+      <ol style="font-size:13px;color:var(--text-2);line-height:2;padding-left:16px;margin-bottom:16px">
+        <li>Go to <strong>console.anthropic.com</strong></li>
+        <li>Sign up free → tap <strong>API Keys</strong></li>
+        <li>Tap <strong>Create Key</strong> → copy it</li>
+        <li>Paste below and tap Save</li>
+      </ol>
+      <a href="https://console.anthropic.com" target="_blank"
+        class="btn btn-ghost btn-full" style="margin-bottom:12px;text-decoration:none">
+        🔗 Open Anthropic Console
+      </a>
+    </div>
+    <div class="form-group">
+      <label class="form-label">API Key</label>
+      <input class="form-input" id="api-key-input" type="password"
+        placeholder="sk-ant-api03-..."
+        style="font-family:'DM Mono',monospace;font-size:13px">
+      <span style="font-size:12px;color:var(--text-muted)">
+        Stored only on your device. Never sent anywhere except Anthropic.
+      </span>
+    </div>
+    <button class="btn-ai" onclick="saveApiKeyFromInput()">
+      Save & Continue ✨
+    </button>
+  </div>`;
+}
+
+function renderAiForm(body) {
+  const dayPills = AI_DAYS.map(d =>
+    `<button class="ai-pill ${aiState.days===d?'selected':''}"
+      onclick="aiSetDays(${d})">${d} days</button>`
+  ).join('');
+
+  const stylePills = AI_STYLES.map(s =>
+    `<button class="ai-pill style ${aiState.style===s?'selected':''}"
+      onclick="aiSetStyle('${s}')">${s}</button>`
+  ).join('');
+
+  const interestPills = AI_INTERESTS.map(i =>
+    `<button class="ai-pill interest ${aiState.interests.includes(i)?'selected':''}"
+      onclick="aiToggleInterest('${i}')">${i}</button>`
+  ).join('');
+
+  body.innerHTML = `
+  <div class="ai-hero">
+    <div class="ai-hero-icon">✨</div>
+    <div class="ai-hero-title">Where are you going?</div>
+    <div class="ai-hero-sub">Tell the AI about your trip and it will plan everything</div>
+  </div>
+  <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none" style="display:block;width:100%;margin-top:-2px;background:transparent">
+    <path d="M0,20 C240,40 480,0 720,20 C960,40 1200,0 1440,20 L1440,40 L0,40 Z"
+      fill="var(--bg)"/>
+  </svg>
+  <div class="form-section">
+    <div class="form-group">
+      <label class="form-label">Destination</label>
+      <input class="form-input" id="ai-dest" placeholder="e.g. Bali, Tokyo, Morocco"
+        value="${escHtml(aiState.destination)}"
+        oninput="aiState.destination=this.value"
+        style="font-size:17px">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <input class="form-input" type="date" id="ai-start"
+          value="${aiState.startDate}"
+          onchange="aiState.startDate=this.value">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Duration</label>
+        <div class="ai-pill-row" style="flex-wrap:wrap;gap:6px">${dayPills}</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Travel Style</label>
+      <div class="ai-pill-row">${stylePills}</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What are you into?</label>
+      <div class="ai-pill-row">${interestPills}</div>
+    </div>
+    <button class="btn-ai" id="ai-generate-btn" onclick="startGenerate()"
+      ${!aiState.destination.trim() ? 'disabled' : ''}>
+      ✨ Generate My Itinerary
+    </button>
+    <button class="btn btn-ghost btn-full" onclick="clearApiKey()"
+      style="margin-top:4px">
+      Change API Key
+    </button>
+  </div>`;
+
+  // Live-enable the generate button as user types
+  document.getElementById('ai-dest').addEventListener('input', () => {
+    document.getElementById('ai-generate-btn').disabled = !document.getElementById('ai-dest').value.trim();
+  });
+}
+
+function renderAiLoading(body) {
+  let msgIdx = 0;
+  body.innerHTML = `
+  <div class="ai-loading">
+    <div class="ai-spinner"></div>
+    <div class="ai-loading-msg" id="ai-loading-msg">${AI_MSGS[0]}</div>
+    <div style="font-size:13px;color:var(--text-muted)">This takes about 10–15 seconds</div>
+  </div>`;
+
+  const interval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % AI_MSGS.length;
+    const el = document.getElementById('ai-loading-msg');
+    if (el) el.textContent = AI_MSGS[msgIdx];
+    else clearInterval(interval);
+  }, 3000);
+}
+
+function renderAiResult(body, result) {
+  // Group items by date
+  const byDate = {};
+  (result.items || []).forEach(item => {
+    if (!byDate[item.date]) byDate[item.date] = [];
+    byDate[item.date].push(item);
+  });
+
+  const dates = Object.keys(byDate).sort();
+
+  const daysHtml = dates.map((d, idx) => {
+    const dt = new Date(d + 'T00:00:00');
+    const label = dt.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'short' });
+    const items = byDate[d].sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    return `<div class="ai-result-day">
+      <div class="ai-result-day-label">Day ${idx+1} · ${label}</div>
+      ${items.map(i => `
+      <div class="ai-result-item">
+        <div class="ai-result-dot" style="background:${typeColor(i.type)}"></div>
+        <span>${typeIcon(i.type)} ${escHtml(i.title)}${i.time ? ` <span style="color:var(--text-muted);font-size:12px">${fmtTime(i.time)}</span>` : ''}</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `
+  <div style="background:linear-gradient(135deg,#4527A0,#1665C0);
+    color:#fff;padding:20px 20px 16px">
+    <div style="font-size:12px;opacity:0.75;margin-bottom:4px">AI Generated</div>
+    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;
+      font-weight:700;margin-bottom:2px">${escHtml(result.tripName)}</div>
+    <div style="font-size:13px;opacity:0.85">${(result.cities||[]).join(' → ')} · ${dates.length} days</div>
+  </div>
+  <div style="background:var(--bg-card);border-bottom:1px solid var(--border)">
+    ${daysHtml}
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+    <button class="btn-ai" onclick="saveGeneratedTrip()">
+      ✅ Add to TripBinder
+    </button>
+    <button class="btn btn-ghost btn-full" onclick="aiState.result=null;renderAiPlanner()">
+      🔄 Regenerate
+    </button>
+    <button class="btn btn-ghost btn-full" onclick="aiState.result=null;aiState.destination='';renderAiPlanner()">
+      ← Plan a different trip
+    </button>
+  </div>`;
+}
+
+/* ── AI STATE SETTERS ────────────────────────────────── */
+function aiSetDays(d) {
+  aiState.days = d;
+  renderAiPlanner();
+}
+function aiSetStyle(s) {
+  aiState.style = s;
+  renderAiPlanner();
+}
+function aiToggleInterest(i) {
+  if (aiState.interests.includes(i)) {
+    aiState.interests = aiState.interests.filter(x => x !== i);
+  } else {
+    aiState.interests.push(i);
+  }
+  renderAiPlanner();
+}
+
+/* ── API KEY ─────────────────────────────────────────── */
+async function getApiKey() {
+  const rec = await Settings.get('anthropicKey').catch(() => null);
+  return rec ? rec.value : null;
+}
+
+async function saveApiKeyFromInput() {
+  const input = document.getElementById('api-key-input');
+  const key = input?.value?.trim();
+  if (!key || !key.startsWith('sk-')) {
+    showToast('Please paste a valid API key (starts with sk-)');
+    return;
+  }
+  await Settings.set('anthropicKey', key);
+  showToast('✅ API key saved!');
+  renderAiPlanner();
+}
+
+async function clearApiKey() {
+  await Settings.set('anthropicKey', null);
+  renderAiPlanner();
+}
+
+/* ── GENERATE ────────────────────────────────────────── */
+async function startGenerate() {
+  const dest = document.getElementById('ai-dest')?.value?.trim()
+             || aiState.destination;
+  const start = document.getElementById('ai-start')?.value || aiState.startDate;
+
+  if (!dest) { showToast('Please enter a destination'); return; }
+
+  aiState.destination = dest;
+  aiState.startDate   = start;
+  aiState.loading     = true;
+  aiState.result      = null;
+
+  renderAiLoading(document.getElementById('ai-planner-body'));
+
+  try {
+    const result = await callAiApi();
+    aiState.result  = result;
+    aiState.loading = false;
+    renderAiResult(document.getElementById('ai-planner-body'), result);
+  } catch(err) {
+    aiState.loading = false;
+    const body = document.getElementById('ai-planner-body');
+    body.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">😕</div>
+      <div class="empty-title">Couldn't generate trip</div>
+      <div class="empty-sub">${escHtml(err.message || 'Something went wrong. Check your API key and try again.')}</div>
+      <button class="btn btn-primary" onclick="renderAiPlanner()">Try Again</button>
+    </div>`;
+  }
+}
+
+async function callAiApi() {
+  const apiKey = await getApiKey();
+  if (!apiKey) throw new Error('No API key found');
+
+  const styleMap = {
+    'Relaxed 😌': '2–3 activities per day with plenty of rest time',
+    'Balanced 🎯': '4–5 activities per day, good mix of sightseeing and downtime',
+    'Packed ⚡':   '6–7 activities per day, maximise every hour',
+  };
+
+  // Calculate dates
+  const dates = [];
+  const start = new Date(aiState.startDate + 'T00:00:00');
+  for (let i = 0; i < aiState.days; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    dates.push(d.toISOString().slice(0,10));
+  }
+
+  const prompt = `You are an expert travel planner. Create a detailed day-by-day itinerary.
+
+Trip details:
+- Destination: ${aiState.destination}
+- Dates: ${dates[0]} to ${dates[dates.length-1]} (${aiState.days} days)
+- Travel style: ${styleMap[aiState.style] || aiState.style}
+- Interests: ${aiState.interests.map(i => i.replace(/^\S+\s/,'')).join(', ')}
+
+Return ONLY valid JSON, no other text, no markdown code blocks:
+{
+  "tripName": "descriptive name e.g. Bali Beach & Culture",
+  "country": "country name",
+  "cities": ["array of cities visited"],
+  "items": [
+    {
+      "type": "flight|hotel|activity|transport|meal|other",
+      "title": "specific real place name",
+      "date": "YYYY-MM-DD",
+      "time": "HH:MM",
+      "location": "specific area or address",
+      "description": "1 sentence tip or detail"
+    }
+  ]
+}
+
+Rules:
+- Use ONLY these exact dates: ${dates.join(', ')}
+- Day 1: include hotel check-in (type hotel, time 14:00 or 15:00)
+- Each day: include breakfast (08:00-09:00) and dinner (19:00-20:00) at real named restaurants
+- Each day: include ${aiState.style.includes('Relaxed') ? '1-2' : aiState.style.includes('Packed') ? '4-5' : '2-3'} activities matching the interests
+- Include transport items between distant places
+- Use real, well-known, bookable places — no fictional venues
+- Spread items evenly across all ${aiState.days} days`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    if (response.status === 401) throw new Error('Invalid API key. Check it and try again.');
+    if (response.status === 429) throw new Error('API rate limit hit. Wait a moment and try again.');
+    throw new Error(err.error?.message || `API error ${response.status}`);
+  }
+
+  const data = await response.json();
+  const text = data.content?.find(c => c.type === 'text')?.text || '';
+
+  // Strip any markdown code fences if present
+  const clean = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+
+  let parsed;
+  try { parsed = JSON.parse(clean); }
+  catch(e) { throw new Error('AI returned unexpected format. Please try again.'); }
+
+  if (!parsed.items || !Array.isArray(parsed.items)) {
+    throw new Error('AI returned incomplete data. Please try again.');
+  }
+
+  return parsed;
+}
+
+/* ── SAVE GENERATED TRIP ─────────────────────────────── */
+async function saveGeneratedTrip() {
+  const result = aiState.result;
+  if (!result) return;
+
+  const dates = [...new Set((result.items||[]).map(i => i.date))].sort();
+  const startDate = dates[0] || aiState.startDate;
+  const endDate   = dates[dates.length-1] || aiState.startDate;
+
+  const tripId = uid();
+  const trip = {
+    id: tripId,
+    name: result.tripName || aiState.destination,
+    country: result.country || '',
+    cities: result.cities || [],
+    startDate, endDate,
+    color: 'grad-ocean',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  await Trips.put(trip);
+
+  for (const item of (result.items || [])) {
+    await Items.put({
+      id: uid(), tripId,
+      type:        item.type || 'activity',
+      title:       item.title || 'Activity',
+      date:        item.date || startDate,
+      time:        item.time || '',
+      location:    item.location || '',
+      lat: null, lng: null,
+      bookingRef:  '',
+      contactInfo: '',
+      description: item.description || '',
+      urls: [], attachments: [],
+      isFavourite: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  // Reset AI state
+  aiState.result      = null;
+  aiState.destination = '';
+
+  showToast('🎉 Trip added to TripBinder!');
+  navigate('trip', { tripId, groupTab: 'expenses' });
+}
+
+
 async function init() {
   await openDB();
   await loadTheme();
