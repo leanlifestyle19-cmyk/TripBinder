@@ -3102,17 +3102,23 @@ ${aiState.specialText.trim() ? `  * ${aiState.specialText.trim()}` : ''}` : ''}`
   const data = await response.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
+  // DEBUG — show raw response so we can diagnose
+  console.log('Gemini raw response:', text);
+
   // Robust JSON extraction — strip thinking blocks, markdown fences, then find the object
   let clean = text;
   clean = clean.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '');
   clean = clean.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
   const jsonMatch = clean.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('AI returned unexpected format. Please try again.');
+  if (!jsonMatch) {
+    // Show first 300 chars of raw response to help diagnose
+    throw new Error(`Unexpected response: ${text.slice(0,300)}`);
+  }
   clean = jsonMatch[0];
 
   let parsed;
   try { parsed = JSON.parse(clean); }
-  catch(e) { throw new Error('AI returned unexpected format. Please try again.'); }
+  catch(e) { throw new Error(`JSON parse failed: ${e.message} — raw: ${clean.slice(0,200)}`); }
 
   if (!parsed.items || !Array.isArray(parsed.items)) {
     throw new Error('AI returned incomplete data. Please try again.');
