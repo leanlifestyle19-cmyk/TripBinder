@@ -588,6 +588,20 @@ textarea.form-input{resize:vertical;min-height:88px}
 .fab-choice-label{font-weight:600;font-size:15px;color:var(--text)}
 .fab-choice-sub{font-size:12px;color:var(--text-3)}
 </style>
+<script>
+/* Register SW and pre-cache as early as possible */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+    .catch(function(e){ console.warn('[SW reg]', e); });
+}
+if ('caches' in window) {
+  caches.open('tripbinder-v5').then(function(cache) {
+    cache.match('./index.html').then(function(hit) {
+      if (!hit) cache.add('./index.html').catch(function(){});
+    });
+  });
+}
+</script>
 </head>
 <body>
 <div id="app">
@@ -1610,8 +1624,8 @@ function renderCalendarHTML(items, trip) {
   const [year, month] = state.calMonth.split('-').map(Number);
   const firstDay = new Date(year, month - 1, 1);
   const lastDay  = new Date(year, month, 0);
-  const prevMonth = new Date(year, month - 2, 1).toISOString().slice(0,7);
-  const nextMonth = new Date(year, month,     1).toISOString().slice(0,7);
+  const prevMonth = localDateStr(new Date(year, month - 2, 1)).slice(0,7);
+  const nextMonth = localDateStr(new Date(year, month,     1)).slice(0,7);
   const startOfGrid = new Date(firstDay);
   startOfGrid.setDate(1 - ((firstDay.getDay() + 6) % 7)); // Mon start
 
@@ -2708,8 +2722,8 @@ async function seedDemoData() {
   startDate.setDate(startDate.getDate() - 1);
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 5);
-  const sd = startDate.toISOString().slice(0,10);
-  const ed = endDate.toISOString().slice(0,10);
+  const sd = localDateStr(startDate);
+  const ed = localDateStr(endDate);
   const td = today();
 
   await Trips.put({
