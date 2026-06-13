@@ -9,16 +9,12 @@
 <meta name="apple-mobile-web-app-title" content="Wayfarer">
 <meta name="description" content="Your personal offline travel binder">
 <link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <title>Wayfarer</title>
 <style>
 /* ── RESET ─────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;-webkit-text-size-adjust:100%}
-body{height:100%;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;
+body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.5;
   background:var(--bg);color:var(--text);transition:background .25s,color .25s;
   overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -80,7 +76,7 @@ svg{display:block}
 .header-back{width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:var(--bg-subtle);color:var(--text-2);flex-shrink:0}
-.header-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;
+.header-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:700;
   color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header-actions{display:flex;gap:8px;flex-shrink:0}
 .header-icon-btn{width:36px;height:36px;border-radius:50%;
@@ -123,7 +119,7 @@ svg{display:block}
 .trip-card-inner{padding:20px;display:flex;flex-direction:column;
   justify-content:flex-end;min-height:140px;
   background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.45) 100%)}
-.trip-card-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;
+.trip-card-name{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:20px;
   font-weight:700;line-height:1.2;margin-bottom:4px}
 .trip-card-sub{font-size:13px;opacity:0.85;display:flex;align-items:center;gap:6px}
 .trip-card-badge{position:absolute;top:12px;right:12px;
@@ -147,7 +143,7 @@ svg{display:block}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
 .item-meta{font-size:13px;color:var(--text-3);display:flex;
   align-items:center;gap:8px;flex-wrap:wrap}
-.item-time{font-family:'DM Mono',monospace;font-size:13px;
+.item-time{font-family:'Courier New',Courier,monospace;font-size:13px;
   color:var(--accent);font-weight:500}
 .item-star{color:var(--text-muted);flex-shrink:0;
   transition:color .2s;padding:2px}
@@ -162,7 +158,7 @@ svg{display:block}
 .timeline{padding:0 16px;display:flex;flex-direction:column;gap:0}
 .timeline-day{margin-bottom:8px}
 .timeline-day-label{
-  font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:700;
   font-size:14px;color:var(--text-3);text-transform:uppercase;
   letter-spacing:0.07em;padding:16px 0 8px;
   display:flex;align-items:center;gap:10px;
@@ -301,7 +297,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .detail-label{font-size:11px;font-weight:700;color:var(--text-muted);
   text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px}
 .detail-value{font-size:15px;color:var(--text)}
-.detail-mono{font-family:'DM Mono',monospace;font-size:16px;
+.detail-mono{font-family:'Courier New',Courier,monospace;font-size:16px;
   font-weight:500;color:var(--text);letter-spacing:0.04em;
   background:var(--bg-subtle);border-radius:var(--radius-sm);
   padding:10px 14px;border:1px solid var(--border)}
@@ -314,7 +310,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .trip-hero{position:relative;color:#fff;overflow:hidden;min-height:180px;
   display:flex;flex-direction:column;justify-content:flex-end}
 .trip-hero-content{padding:20px;position:relative;z-index:1}
-.trip-hero-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;
+.trip-hero-name{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:26px;
   font-weight:700;line-height:1.2;margin-bottom:4px}
 .trip-hero-sub{font-size:14px;opacity:0.85}
 .trip-hero-actions{display:flex;gap:8px;padding:12px 16px 4px;flex-wrap:wrap}
@@ -332,7 +328,7 @@ textarea.form-input{resize:vertical;min-height:88px}
   padding:8px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
   background:var(--bg-card);cursor:pointer;transition:all .2s;min-width:56px}
 .day-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.day-tab-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700}
+.day-tab-num{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:700}
 .day-tab-dow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;
   opacity:0.75}
 
@@ -391,7 +387,7 @@ textarea.form-input{resize:vertical;min-height:88px}
   box-shadow:var(--shadow-lg);max-height:90dvh;overflow-y:auto}
 .modal-handle{width:36px;height:4px;border-radius:2px;
   background:var(--border);margin:0 auto 16px}
-.modal-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;
+.modal-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;
   font-weight:700;margin-bottom:16px}
 
 /* ── IMAGE OVERLAY ──────────────────────────────────── */
@@ -409,7 +405,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .empty-state{display:flex;flex-direction:column;align-items:center;
   justify-content:center;padding:60px 24px;gap:16px;flex:1;text-align:center}
 .empty-icon{font-size:52px;opacity:0.45}
-.empty-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;
+.empty-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;
   font-weight:700;color:var(--text-2)}
 .empty-sub{font-size:14px;color:var(--text-3);max-width:240px}
 
@@ -418,12 +414,12 @@ textarea.form-input{resize:vertical;min-height:88px}
   display:flex;flex-direction:column;justify-content:flex-end}
 .home-hero-content{position:relative;z-index:1;padding:20px}
 .home-greeting{font-size:13px;opacity:0.8;margin-bottom:2px}
-.home-trip-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;
+.home-trip-name{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:22px;
   font-weight:700;line-height:1.2}
 .home-trip-sub{font-size:13px;opacity:0.8;margin-top:4px}
 .wave-divider{display:block;width:100%;margin-bottom:-2px;position:relative;z-index:1}
 .today-section{padding:16px}
-.today-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;
+.today-label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:15px;
   font-weight:700;color:var(--text-2);margin-bottom:12px;
   display:flex;align-items:center;gap:8px}
 
@@ -433,7 +429,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .url-del-btn{color:var(--text-muted);font-size:20px;padding:4px;flex-shrink:0}
 
 /* ── SECTION TITLE ──────────────────────────────────── */
-.section-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;
+.section-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:15px;
   font-weight:700;color:var(--text-2);padding:16px 16px 8px;
   display:flex;align-items:center;justify-content:space-between}
 
@@ -449,7 +445,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .trips-list{display:flex;flex-direction:column;gap:12px}
 
 /* ── ABOUT ───────────────────────────────────────────── */
-.about-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;
+.about-logo{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:28px;
   font-weight:700;color:var(--accent)}
 .about-version{font-size:13px;color:var(--text-3);margin-top:4px}
 
@@ -469,7 +465,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .share-section p{font-size:14px;color:var(--text-3);line-height:1.6}
 .share-pre{background:var(--bg-subtle);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:14px;font-size:13px;
-  font-family:'DM Mono',monospace;white-space:pre-wrap;word-break:break-all;
+  font-family:'Courier New',Courier,monospace;white-space:pre-wrap;word-break:break-all;
   max-height:200px;overflow-y:auto;color:var(--text-2);margin:12px 0}
 
 /* ── IMPORT ZONE ─────────────────────────────────────── */
@@ -482,7 +478,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 
 /* ── ITEM DETAIL HERO ────────────────────────────────── */
 .item-hero{padding:20px 16px 16px;display:flex;flex-direction:column;gap:10px}
-.item-hero-title{font-family:'Plus Jakarta Sans',sans-serif;
+.item-hero-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   font-size:22px;font-weight:700;color:var(--text);line-height:1.3}
 .item-hero-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
@@ -509,7 +505,7 @@ textarea.form-input{resize:vertical;min-height:88px}
   0%,100%{transform:translateY(0)}
   50%{transform:translateY(-10px)}
 }
-.ob-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;
+.ob-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:26px;
   font-weight:700;line-height:1.2;margin-bottom:12px}
 .ob-body{font-size:16px;opacity:0.88;line-height:1.6;max-width:300px}
 .ob-footer{padding:24px 24px calc(24px + var(--safe-bottom));
@@ -535,7 +531,7 @@ textarea.form-input{resize:vertical;min-height:88px}
 .ai-hero::after{content:'✨';position:absolute;right:-10px;top:-10px;
   font-size:120px;opacity:0.07}
 .ai-hero-icon{font-size:52px;margin-bottom:12px}
-.ai-hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;
+.ai-hero-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:22px;
   font-weight:700;margin-bottom:6px}
 .ai-hero-sub{font-size:14px;opacity:0.85;line-height:1.5;max-width:280px;margin:0 auto}
 .ai-pill-row{display:flex;gap:8px;flex-wrap:wrap}
@@ -578,7 +574,7 @@ textarea.form-input{resize:vertical;min-height:88px}
   width:100%;max-width:560px;
   padding:20px 20px calc(20px + var(--safe-bottom));
   box-shadow:var(--shadow-lg)}
-.fab-choice-title{font-family:'Plus Jakarta Sans',sans-serif;
+.fab-choice-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   font-size:16px;font-weight:700;margin-bottom:14px;color:var(--text)}
 .fab-choice-btn{display:flex;align-items:center;gap:14px;
   padding:14px;border-radius:var(--radius);
@@ -785,7 +781,6 @@ textarea.form-input{resize:vertical;min-height:88px}
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 'use strict';
 
@@ -819,7 +814,7 @@ function toolkitBannerHTML(currentApp) {
         <div style="background:${a.color};padding:12px 14px;
           display:flex;align-items:center;gap:8px;color:#fff">
           <span style="font-size:20px">${a.icon}</span>
-          <span style="font-family:'Plus Jakarta Sans',sans-serif;
+          <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
             font-size:13px;font-weight:700">${a.name}</span>
         </div>
       </a>`).join('')}
@@ -1631,7 +1626,7 @@ function renderCalendarHTML(items, trip) {
   let html = `
   <div style="padding:8px 16px;display:flex;align-items:center;justify-content:space-between">
     <button class="btn btn-ghost btn-sm" onclick="state.calMonth='${prevMonth}';renderTrip()">‹</button>
-    <span style="font-weight:700;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif">
+    <span style="font-weight:700;font-size:15px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
       ${firstDay.toLocaleDateString('en-GB',{month:'long',year:'numeric'})}
     </span>
     <button class="btn btn-ghost btn-sm" onclick="state.calMonth='${nextMonth}';renderTrip()">›</button>
@@ -1705,7 +1700,7 @@ function itemCardHTML(item, showDate = false) {
       <div class="item-title">${escHtml(item.title)}</div>
       <div class="item-meta">
         ${timeLine}${dateLine}${loc}
-        ${item.bookingRef ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">${escHtml(item.bookingRef)}</span>` : ''}
+        ${item.bookingRef ? `<span style="font-family:'Courier New',Courier,monospace;font-size:12px;color:var(--accent)">${escHtml(item.bookingRef)}</span>` : ''}
       </div>
     </div>
     <button class="item-star ${star}" data-item-star="${item.id}" onclick="event.stopPropagation();toggleFav('${item.id}')">
@@ -1779,7 +1774,7 @@ async function renderItem() {
     ${item.date || item.time ? `
     <div class="item-hero-row">
       ${item.date ? `<span style="font-size:14px;color:var(--text-3)">📅 ${fmtDate(item.date)}</span>` : ''}
-      ${item.time ? `<span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--accent);font-weight:500">🕐 ${fmtTime(item.time)}</span>` : ''}
+      ${item.time ? `<span style="font-family:'Courier New',Courier,monospace;font-size:14px;color:var(--accent);font-weight:500">🕐 ${fmtTime(item.time)}</span>` : ''}
     </div>` : ''}
   </div>`;
 
@@ -1861,21 +1856,59 @@ async function renderItem() {
 
   root.innerHTML = html;
 
-  // Init map
+  // Init map — load Leaflet lazily only when needed
   if (item.lat && item.lng) {
     setTimeout(() => {
-      try {
-        const map = L.map('leaflet-map').setView([item.lat, item.lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          maxZoom:19,
-        }).addTo(map);
-        L.marker([item.lat, item.lng]).addTo(map)
-          .bindPopup(item.location || item.title).openPopup();
-        state.leafletMap = map;
-      } catch(e) { console.error('Map error:', e); }
+      loadLeafletAndRenderMap(item.lat, item.lng, item.location || item.title);
     }, 150);
   }
+}
+
+function loadLeafletAndRenderMap(lat, lng, label) {
+  // If Leaflet already loaded, use it directly
+  if (typeof L !== 'undefined') {
+    renderLeafletMap(lat, lng, label);
+    return;
+  }
+
+  // Inject Leaflet CSS
+  if (!document.getElementById('leaflet-css')) {
+    const link  = document.createElement('link');
+    link.id     = 'leaflet-css';
+    link.rel    = 'stylesheet';
+    link.href   = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+  }
+
+  // Inject Leaflet JS
+  const script   = document.createElement('script');
+  script.src     = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.onload  = () => renderLeafletMap(lat, lng, label);
+  script.onerror = () => {
+    const el = document.getElementById('leaflet-map');
+    if (el) el.innerHTML = `
+      <div style="padding:14px;background:var(--bg-subtle);border-radius:var(--radius-sm);
+        font-size:13px;color:var(--text-3);text-align:center">
+        📵 Map not available offline.<br>
+        <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank"
+          style="color:var(--accent);font-weight:600">Open in Google Maps →</a>
+      </div>`;
+  };
+  document.body.appendChild(script);
+}
+
+function renderLeafletMap(lat, lng, label) {
+  try {
+    const el = document.getElementById('leaflet-map');
+    if (!el) return;
+    if (state.leafletMap) { state.leafletMap.remove(); state.leafletMap = null; }
+    const map = L.map('leaflet-map').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:'© OpenStreetMap', maxZoom:19,
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup(label).openPopup();
+    state.leafletMap = map;
+  } catch(e) { console.error('Map error:', e); }
 }
 
 async function openPdf(idx, itemId) {
@@ -2110,7 +2143,7 @@ async function renderEditItem() {
     </div>
     <div class="form-group">
       <label class="form-label">Booking Reference</label>
-      <input class="form-input" id="item-booking" placeholder="e.g. ABC123" value="${escHtml(item.bookingRef||'')}" style="font-family:'DM Mono',monospace">
+      <input class="form-input" id="item-booking" placeholder="e.g. ABC123" value="${escHtml(item.bookingRef||'')}" style="font-family:'Courier New',Courier,monospace">
     </div>
     <div class="form-group">
       <label class="form-label">Contact Info</label>
@@ -2334,7 +2367,7 @@ async function renderSettings() {
     <div class="settings-row">
       <div class="settings-row-left">
         <div class="settings-row-title">✨ AI Connected</div>
-        <div class="settings-row-sub" style="font-family:'DM Mono',monospace;font-size:11px">
+        <div class="settings-row-sub" style="font-family:'Courier New',Courier,monospace;font-size:11px">
           ${apiKey.slice(0,12)}••••••••••••
         </div>
       </div>
@@ -2444,7 +2477,7 @@ async function renderShare() {
 
   root.innerHTML = `
   <div class="share-section">
-    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">
       ${escHtml(trip.name)}
     </div>
     <p>Share your itinerary as plain text or export as a JSON backup file.</p>
@@ -2771,7 +2804,7 @@ function renderApiKeySetup(body) {
   </div>
   <div class="form-section">
     <div class="ai-key-card">
-      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:700;
         font-size:15px;color:var(--text);margin-bottom:6px">
         🔑 Connect your Google Gemini API key
       </div>
@@ -2793,7 +2826,7 @@ function renderApiKeySetup(body) {
       <label class="form-label">API Key</label>
       <input class="form-input" id="api-key-input" type="password"
         placeholder="Paste your API key here"
-        style="font-family:'DM Mono',monospace;font-size:13px">
+        style="font-family:'Courier New',Courier,monospace;font-size:13px">
       <span style="font-size:12px;color:var(--text-muted)">
         Stored only on your device. Never sent anywhere except Google.
       </span>
@@ -2937,7 +2970,7 @@ function renderAiResult(body, result) {
   <div style="background:linear-gradient(135deg,#4527A0,#1665C0);
     color:#fff;padding:20px 20px 16px">
     <div style="font-size:12px;opacity:0.75;margin-bottom:4px">AI Generated</div>
-    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:20px;
       font-weight:700;margin-bottom:2px">${escHtml(result.tripName)}</div>
     <div style="font-size:13px;opacity:0.85">${(result.cities||[]).join(' → ')} · ${dates.length} days</div>
   </div>
