@@ -1070,19 +1070,26 @@ function fmtDuration(start, end) {
   return d === 1 ? '1 day' : `${d} days`;
 }
 
+function localDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
 function datesBetween(start, end) {
   const arr = [];
   let cur = new Date(start + 'T00:00:00');
   const e  = new Date(end   + 'T00:00:00');
   while (cur <= e) {
-    arr.push(cur.toISOString().slice(0,10));
+    arr.push(localDateStr(cur));
     cur.setDate(cur.getDate() + 1);
   }
   return arr;
 }
 
 function today() {
-  return new Date().toISOString().slice(0,10);
+  return localDateStr(new Date());
 }
 
 function greeting() {
@@ -1636,7 +1643,7 @@ function renderCalendarHTML(items, trip) {
 
   const cur = new Date(startOfGrid);
   for (let i = 0; i < 42; i++) {
-    const dateStr   = cur.toISOString().slice(0,10);
+    const dateStr   = localDateStr(cur);
     const inTrip    = dateStr >= trip.startDate && dateStr <= trip.endDate;
     const isToday   = dateStr === t;
     const isSelected = dateStr === state.activeDay;
@@ -2712,7 +2719,7 @@ async function seedDemoData() {
 const AI_STYLES    = ['Relaxed 😌','Balanced 🎯','Packed ⚡'];
 const AI_INTERESTS = ['🍽️ Food','🏛️ Culture','🌿 Nature','🛍️ Shopping',
                       '🏔️ Adventure','📸 Instagram','🎭 Nightlife','👨‍👩‍👧 Family'];
-const AI_DAYS      = [3, 5, 7, 10, 14];
+const AI_DAYS      = [1, 2, 3, 5, 7, 10, 14];
 const AI_MSGS      = [
   'Researching your destination ✈️',
   'Finding the best local spots 📍',
@@ -3036,7 +3043,7 @@ async function callAiApi() {
   for (let i = 0; i < aiState.days; i++) {
     const d = new Date(start);
     d.setDate(d.getDate() + i);
-    dates.push(d.toISOString().slice(0,10));
+    dates.push(localDateStr(d));
   }
 
   const prompt = `You are an expert travel planner. Create a detailed day-by-day itinerary.
@@ -3066,7 +3073,7 @@ Return ONLY valid JSON, no other text, no markdown code blocks:
 
 Rules:
 - Use ONLY these exact dates: ${dates.join(', ')}
-- Day 1: include hotel check-in (type hotel, time 14:00 or 15:00)
+- ${aiState.days <= 2 ? 'No hotel needed — this is a day trip, focus on activities, meals and transport' : 'Day 1: include hotel check-in (type hotel, time 14:00 or 15:00)'}
 - Each day: include breakfast (08:00-09:00) and dinner (19:00-20:00) at real named restaurants
 - Each day: include ${aiState.style.includes('Relaxed') ? '1-2' : aiState.style.includes('Packed') ? '4-5' : '2-3'} activities matching the interests
 - Include transport items between distant places
