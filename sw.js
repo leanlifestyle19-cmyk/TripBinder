@@ -4,8 +4,8 @@
              Network-first fallback for everything else.
 ══════════════════════════════════════════════════════ */
 
-const CACHE_NAME    = 'wayfarer-v1';
-const DYNAMIC_CACHE = 'wayfarer-dynamic-v1';
+const CACHE_NAME    = 'wayfarer-v2';
+const DYNAMIC_CACHE = 'wayfarer-dynamic-v2';
 
 /* Resources to pre-cache on install */
 const APP_SHELL = [
