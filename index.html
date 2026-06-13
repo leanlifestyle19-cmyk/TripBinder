@@ -3221,8 +3221,13 @@ async function init() {
   await openDB();
   await loadTheme();
   await scheduleNotifications();
-  registerSW();
   await checkOnboarded();
+}
+
+// Register SW immediately — don't wait for DB or anything else
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .catch(e => console.warn('[SW]', e));
 }
 
 init().catch(console.error);
