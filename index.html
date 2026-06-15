@@ -525,6 +525,13 @@ textarea.form-input{resize:vertical;min-height:88px}
 .ob-skip{font-size:13px;color:var(--text-muted);padding:4px 8px;
   background:none;border:none;cursor:pointer}
 
+/* ── STAR RATING ─────────────────────────────────────── */
+.stars-row{display:flex;gap:8px;justify-content:center;padding:8px 0}
+.star-btn{font-size:36px;background:none;border:none;cursor:pointer;
+  transition:transform .15s;line-height:1;color:var(--text-muted)}
+.star-btn.lit{color:#F59E0B}
+.star-btn:active{transform:scale(1.2)}
+
 /* ── AI PLANNER ──────────────────────────────────────── */
 .ai-hero{background:linear-gradient(135deg,#4527A0,#1665C0);
   color:#fff;padding:32px 20px 24px;text-align:center;position:relative;overflow:hidden}
@@ -750,6 +757,57 @@ if ('caches' in window) {
   </nav>
 
 
+</div>
+
+<!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
+<div class="modal-overlay" id="feedback-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Rate TripBinder ⭐</div>
+    <p style="font-size:14px;color:var(--text-3);text-align:center;margin-bottom:4px;line-height:1.5">
+      How has TripBinder been for your travels?
+    </p>
+    <div class="stars-row" id="stars-row">
+      <button class="star-btn" data-val="1" onclick="setRating(1)">☆</button>
+      <button class="star-btn" data-val="2" onclick="setRating(2)">☆</button>
+      <button class="star-btn" data-val="3" onclick="setRating(3)">☆</button>
+      <button class="star-btn" data-val="4" onclick="setRating(4)">☆</button>
+      <button class="star-btn" data-val="5" onclick="setRating(5)">☆</button>
+    </div>
+    <div id="star-label" style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:12px;min-height:18px"></div>
+    <textarea id="feedback-comment" class="form-input" rows="3"
+      placeholder="Any comments? (optional)"
+      style="font-size:14px;resize:none;margin-bottom:14px"></textarea>
+    <button class="btn btn-primary btn-full" onclick="submitFeedback()">Send Feedback 📤</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="closeFeedbackModal()">Maybe later</button>
+  </div>
+</div>
+
+<!-- ── BACKUP MODAL ────────────────────────────────────── -->
+<div class="modal-overlay" id="backup-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Back Up Your Data 💾</div>
+    <p style="font-size:14px;color:var(--text-3);line-height:1.6;margin-bottom:16px">
+      Save all your trips, items, and checklists to a file on your phone. Use this before clearing the app or switching devices.
+    </p>
+    <button class="btn btn-primary btn-full" onclick="backupData()">
+      💾 Download Backup File
+    </button>
+    <div style="margin:16px 0;border-top:1px solid var(--border);padding-top:16px">
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">Restore from backup</div>
+      <p style="font-size:13px;color:var(--text-3);line-height:1.6;margin-bottom:10px">
+        This will add all trips from your backup file. Your existing trips will not be deleted.
+      </p>
+      <label style="display:flex;align-items:center;justify-content:center;gap:8px;
+        border:2px dashed var(--border);border-radius:var(--radius);padding:16px;
+        cursor:pointer;color:var(--text-3);font-weight:600;font-size:14px">
+        📂 Choose Backup File
+        <input type="file" accept=".json" style="display:none" onchange="restoreData(this)">
+      </label>
+    </div>
+    <button class="btn btn-ghost btn-full" onclick="closeBackupModal()">Close</button>
+  </div>
 </div>
 
 <!-- ── FAB CHOICE ─────────────────────────────────────── -->
@@ -1467,6 +1525,12 @@ function tripCardHTML(trip) {
         <span>${escHtml(dur)}</span>
       </div>
     </div>
+    <button onclick="event.stopPropagation();confirmDelete('trip','${trip.id}','${escHtml(trip.name).replace(/'/g,"\\'")}');"
+      style="position:absolute;bottom:10px;right:12px;
+        background:rgba(0,0,0,0.25);border:none;border-radius:20px;
+        color:#fff;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">
+      🗑️ Delete
+    </button>
   </div>`;
 }
 
@@ -2376,6 +2440,28 @@ async function renderSettings() {
 
   root.innerHTML = `
   <div class="settings-group">
+    <div class="settings-label">Your Data</div>
+    <div class="settings-row" style="cursor:pointer" onclick="openBackupModal()">
+      <div class="settings-row-left">
+        <div class="settings-row-title">💾 Back Up My Data</div>
+        <div class="settings-row-sub">Save all trips to a file on your phone</div>
+      </div>
+      <span style="color:var(--text-muted);font-size:18px">→</span>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-label">Feedback</div>
+    <div class="settings-row" style="cursor:pointer" onclick="openFeedbackModal()">
+      <div class="settings-row-left">
+        <div class="settings-row-title">⭐ Rate TripBinder</div>
+        <div class="settings-row-sub">Tell us how we're doing</div>
+      </div>
+      <span style="color:var(--text-muted);font-size:18px">→</span>
+    </div>
+  </div>
+
+  <div class="settings-group">
     <div class="settings-label">AI Trip Planner</div>
     ${apiKey ? `
     <div class="settings-row">
@@ -3230,6 +3316,71 @@ async function saveGeneratedTrip() {
   navigate('trip', { tripId, groupTab: 'expenses' });
 }
 
+/* ══════════════════════════════════════════════════════
+   FEEDBACK
+══════════════════════════════════════════════════════ */
+const STAR_LABELS = ['','Terrible 😞','Not great 😕','It\'s okay 😐','Pretty good 😊','Amazing! 🤩'];
+const FEEDBACK_EMAIL = 'leanlifestyle19@gmail.com';
+
+let _rating = 0;
+
+function openFeedbackModal() {
+  _rating = 0;
+  document.querySelectorAll('.star-btn').forEach(b => { b.textContent='☆'; b.classList.remove('lit'); });
+  document.getElementById('star-label').textContent = '';
+  document.getElementById('feedback-comment').value = '';
+  document.getElementById('feedback-modal').classList.add('show');
+}
+function closeFeedbackModal() { document.getElementById('feedback-modal').classList.remove('show'); }
+function setRating(val) {
+  _rating = val;
+  document.querySelectorAll('.star-btn').forEach(b => {
+    const v = parseInt(b.dataset.val);
+    b.textContent = v <= val ? '★' : '☆';
+    b.classList.toggle('lit', v <= val);
+  });
+  document.getElementById('star-label').textContent = STAR_LABELS[val];
+}
+function submitFeedback() {
+  if (!_rating) { showToast('Please select a star rating'); return; }
+  const comment = document.getElementById('feedback-comment').value.trim();
+  const stars   = '⭐'.repeat(_rating);
+  const subject = encodeURIComponent('TripBinder Feedback — ' + stars + ' (' + _rating + '/5)');
+  const body    = encodeURIComponent('Rating: ' + stars + ' (' + _rating + '/5)' + (comment ? '\n\nComments:\n' + comment : ''));
+  window.open('mailto:' + FEEDBACK_EMAIL + '?subject=' + subject + '&body=' + body);
+  closeFeedbackModal();
+  showToast('Thanks for your feedback! 🙏');
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA BACKUP
+══════════════════════════════════════════════════════ */
+function openBackupModal()  { document.getElementById('backup-modal').classList.add('show'); }
+function closeBackupModal() { document.getElementById('backup-modal').classList.remove('show'); }
+
+async function backupData() {
+  try {
+    const [trips, items, checklists] = await Promise.all([Trips.getAll(), Items.getAll(), Checklist.getAll()]);
+    const blob = new Blob([JSON.stringify({ version:1, app:'TripBinder', exportedAt:new Date().toISOString(), trips, items, checklists }, null, 2)], { type:'application/json' });
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `tripbinder-backup-${today()}.json` });
+    a.click(); URL.revokeObjectURL(a.href);
+    showToast('✅ Backup saved to your downloads!');
+  } catch(e) { showToast('❌ Backup failed: ' + e.message); }
+}
+
+async function restoreData(input) {
+  const file = input.files[0]; if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data.trips) throw new Error('Invalid backup file');
+    let count = 0;
+    for (const t of data.trips)       { if (!(await Trips.get(t.id).catch(()=>null)))     { await Trips.put(t); count++; } }
+    for (const i of data.items)       { if (!(await Items.get(i.id).catch(()=>null)))     await Items.put(i); }
+    for (const c of (data.checklists||[])) { if (!(await Checklist.get(c.id).catch(()=>null))) await Checklist.put(c); }
+    closeBackupModal(); showToast(`✅ Restored ${count} trip${count!==1?'s':''}!`); navigate('trips',{});
+  } catch(e) { showToast('❌ Restore failed: ' + e.message); }
+  input.value = '';
+}
 
 async function init() {
   await openDB();
