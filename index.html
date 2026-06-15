@@ -3343,11 +3343,14 @@ function setRating(val) {
 }
 function submitFeedback() {
   if (!_rating) { showToast('Please select a star rating'); return; }
-  const comment = document.getElementById('feedback-comment').value.trim();
-  const stars   = '⭐'.repeat(_rating);
-  const subject = encodeURIComponent('TripBinder Feedback — ' + stars + ' (' + _rating + '/5)');
-  const body    = encodeURIComponent('Rating: ' + stars + ' (' + _rating + '/5)' + (comment ? '\n\nComments:\n' + comment : ''));
-  window.open('mailto:' + FEEDBACK_EMAIL + '?subject=' + subject + '&body=' + body);
+  const comment  = document.getElementById('feedback-comment').value.trim();
+  const subject  = 'TripBinder Feedback - ' + _rating + ' out of 5 stars';
+  const lines    = ['App: TripBinder', 'Rating: ' + _rating + '/5 stars'];
+  if (comment) lines.push('', 'Comments:', comment);
+  const mailtoUrl = 'mailto:' + FEEDBACK_EMAIL
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body='    + encodeURIComponent(lines.join('\n'));
+  window.open(mailtoUrl);
   closeFeedbackModal();
   showToast('Thanks for your feedback! 🙏');
 }
