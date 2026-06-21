@@ -2791,6 +2791,7 @@ async function scheduleNotifications() {
 function registerSW() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then(() => navigator.storage && navigator.storage.persist && navigator.storage.persist())
       .then(() => console.log('SW registered'))
       .catch(e => console.warn('SW error:', e));
   }
@@ -3395,6 +3396,7 @@ async function init() {
 // Register SW immediately — don't wait for DB or anything else
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then(() => navigator.storage && navigator.storage.persist && navigator.storage.persist())
     .catch(e => console.warn('[SW]', e));
 }
 
